@@ -1,4 +1,18 @@
-import {BadRequestException, Body, Controller, Delete, Get, Header, HttpCode, Param, Post, Query} from "@nestjs/common";
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Header,
+    HttpCode,
+    Param,
+    Post,
+    Query,
+    Req, Res
+} from "@nestjs/common";
+import {MascotaCeateDto} from "./dto/mascota.create-dto";
+import {validate, ValidationError} from "class-validator";
 // /juegos-http
 // @Controller('juegos-http')
 @Controller('juegos-http') export class HttpJuegoController {
@@ -53,10 +67,54 @@ import {BadRequestException, Body, Controller, Delete, Get, Header, HttpCode, Pa
     }
 
     @Post('parametros-cuerpo')
-    parametrosCuerpo(
+    async parametrosCuerpo(
         @Body() parametrosDeCuerpo
     ){
+        //Promesas
+        const mascotaValida = new MascotaCeateDto();
+        mascotaValida.casada = parametrosDeCuerpo.casada;
+        mascotaValida.edad = parametrosDeCuerpo.edad;
+        mascotaValida.ligada = parametrosDeCuerpo.ligada;
+        mascotaValida.nombre = parametrosDeCuerpo.nombre;
+        mascotaValida.peso = parametrosDeCuerpo.peso;
+
+        try {
+            const errores:ValidationError[] = await validate(mascotaValida)
+            if (errores.length > 0){
+                console.error('Errores: ', errores);
+                throw new BadRequestException('Error validando')
+            }else{
+                return {
+                    mensaje: 'Se creo correctamente'
+                };
+            }
+        }catch (e) {
+            console.error('Error ',e)
+            throw new BadRequestException('Error validando')
+        }
+
         console.log('parametrosDeCuerpo', parametrosDeCuerpo);
         return 'Resgistro Creado';
     }
+
+    @Get('guardarCookieInsegura')
+    guardarCookieInsegura(
+        @Query() parametrosConsulta,
+        @Req() req,
+        @Res() res,
+    ){
+        res.cookie(
+            'galetaInsegura', //nombre
+            'Tengohambre',
+        );
+        const mensaje = {
+            mensaje: 'ok'
+        };
+        // retun mensaje; // NO SE [UEDE USAR RETURN CUANDO SE USA @RES() JO !!
+        res.send(mensaje); // METODO EXPRESSJS
+    }
+
+    // 1 Guardar Cookie Insegura
+    // 2 Guardar Cookie Segura
+    // 3 Mostrar Cookies
 }
