@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // pm run start:dev
 
-  app.use(cookieParser())
+  app.use(cookieParser('Me agradan los poliperros'));
   await app.listen(3000);
 }
 bootstrap();

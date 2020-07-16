@@ -114,7 +114,55 @@ import {validate, ValidationError} from "class-validator";
         res.send(mensaje); // METODO EXPRESSJS
     }
 
+    @Get('guardarCookieSegura')
+    guardarCookieSegura(
+        @Query() parametrosConsulta,
+        @Req() req, // Peticion
+        @Res() res, // Respuesta
+    ){
+        res.cookie(
+            'galletaSegura', //nombre
+            'Web :3', //valor
+            {
+                secure: true
+            }
+        );
+        const mensaje = {
+            mensaje: 'ok'
+        };
+        // retun mensaje; // NO SE [UEDE USAR RETURN CUANDO SE USA @RES() JO !!
+        res.send(mensaje); // METODO EXPRESSJS
+    }
     // 1 Guardar Cookie Insegura
     // 2 Guardar Cookie Segura
     // 3 Mostrar Cookies
+
+    @Get( 'mostrarCookies')
+    mostrarCookies(
+        @Req() req
+    ){
+        const mensaja = {
+            sinFirmar: req.cookies,
+            firmadas: req.signedCookies
+        }
+        return mensaja;
+    }
+
+    @Get('guardarCookieFirmada')
+    guardarCookieFirmada(
+        @Res() res,
+    ){
+        res.cookie(
+            'firmada', //nombre
+            'poliburguer', //valor
+            {
+                signed: true
+            }
+        );
+        const mensaje = {
+            mensaje: 'ok'
+        };
+
+        res.send(mensaje);
+    }
 }
