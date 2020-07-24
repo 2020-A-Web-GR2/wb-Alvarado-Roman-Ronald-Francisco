@@ -1,4 +1,7 @@
 import {Injectable} from '@nestjs/common';
+import {UsuarioEntity} from "./usuario.entity";
+import {Repository} from "typeorm";
+import {InjectRepository} from "@nestjs/typeorm";
 // 1 Controlador
 // 2 Servicio
 // 3 Modulo
@@ -7,5 +10,14 @@ import {Injectable} from '@nestjs/common';
 
 @Injectable()
 export class UsuarioService {
+    constructor(  //Inyeccion de Dependencias
+        @InjectRepository(UsuarioEntity)
+        private repositorio: Repository<UsuarioEntity>
+    ) {
 
+    }
+
+    crearUno(nuevoUsuario:UsuarioEntity){
+        return this.repositorio.save(nuevoUsuario)
+    }
 }
