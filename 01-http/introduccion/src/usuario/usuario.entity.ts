@@ -7,10 +7,11 @@ import {Column, Index, Entity, PrimaryGeneratedColumn} from "typeorm";
     'fechaNacimiento',
     'fechaHoraNacimiento' //
 ])
-@Index(
+/*@Index(
     ['nombre', 'apellido', 'cedula'],
     {unique: true}
-)
+)*/
+
 @Entity('epn_usuario') // NOMBRE DE LA TABLA DE USUARIO
 export class UsuarioEntity {
     @PrimaryGeneratedColumn({
@@ -67,7 +68,4 @@ export class UsuarioEntity {
         name: 'fecha_hora_nacimiento'
     })
     fechaHoraNacimiento?:string;
-
-
-
 }

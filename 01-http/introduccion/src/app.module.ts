@@ -17,7 +17,7 @@ import {UsuarioEntity} from "./usuario/usuario.entity";
           host: 'localhost', // Ip del DB
           port: 3306, // puerto
           username: 'root', // Usuario
-          password: 'root', // Password
+          password: 'EPNdth2020', // Password
           database: 'test', // Base de datos
           entities: [ // TODAS LAS ENTIDADES
               UsuarioEntity
