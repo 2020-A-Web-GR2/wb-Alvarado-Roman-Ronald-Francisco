@@ -11,7 +11,7 @@ import {UsuarioEntity} from "./usuario.entity";
                 .forFeature(
                 [
                     UsuarioEntity
-                ], 'defailt' // Nombre de la cadena de conexion
+                ], 'default' // Nombre de la cadena de conexion
             )
         ],
         controllers:[
