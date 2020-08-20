@@ -23,11 +23,6 @@ export class UsuarioUpdateDto{
     @IsNotEmpty()
     apellido: string;
 
-    @IsISBN("10")
-    @IsNotEmpty()
-    @IsAlpha()
-    cedula: string;
-
     @IsNotEmpty()
     @IsDecimal()
     @IsPositive()
