@@ -7,9 +7,10 @@ import {
     Put,
     Delete,
     BadRequestException,
-    InternalServerErrorException, NotFoundException
+    InternalServerErrorException, NotFoundException, Res
 } from "@nestjs/common";
 import {UsuarioService} from "./usuario.service";
+import {MascotaService} from "../mascota/mascota.service";
 
 @Controller('usuario')
 export class UsuarioController {
@@ -32,7 +33,8 @@ export class UsuarioController {
     public idActual = 3;
 
     constructor(
-        private readonly _usuarioService: UsuarioService
+        private readonly _usuarioService: UsuarioService,
+        private readonly _mascotaService: MascotaService,
     ) {
     }
 
@@ -103,28 +105,115 @@ export class UsuarioController {
     }
 
     @Put(':id')
-    editarUno(
+    async editarUno(
         @Param() paramentrosRuta,
         @Body() parametrosCuerpo
     ){
-        const indice = this.arregloUsuarios.findIndex(
+        const id = Number(paramentrosRuta.id);
+        const usuarioEditado = parametrosCuerpo;
+        usuarioEditado.id = id;
+        try {
+            const respuesta = await this._usuarioService.editarUno(usuarioEditado);
+            return respuesta;
+        }catch (e) {
+            console.error(e)
+            throw new InternalServerErrorException({
+                mensaje: 'Error del servidor',
+            })
+        }
+
+
+        /*const indice = this.arregloUsuarios.findIndex(
             (usuario) => usuario.id === Number(paramentrosRuta.id)
         );
         this.arregloUsuarios[indice].nombre = parametrosCuerpo.nombre;
-        return this.arregloUsuarios[indice];
+        return this.arregloUsuarios[indice];*/
+
     }
 
     @Delete(':id')
-    eliminarUno(
+    async eliminarUno(
         @Param() paramentrosRuta
     ){
-        const indice = this.arregloUsuarios.findIndex(
+        const id = Number(paramentrosRuta.id);
+        try {
+            const respuesta = await this._usuarioService.eliminarUno(id);
+            return {
+                mensaje: 'Registro con id '+ id + ' eliminado'
+            };
+        }catch (e) {
+            console.error(e)
+            throw new InternalServerErrorException({
+                mensaje: 'Error del servidor',
+            })
+        }
+        /*const indice = this.arregloUsuarios.findIndex(
             (usuario) => usuario.id === Number(paramentrosRuta.id)
         );
         this.arregloUsuarios.splice(indice, 1);
-        return this.arregloUsuarios[indice];
+        return this.arregloUsuarios[indice];*/
     }
 
+    @Post('crearUsuarioYCrearMascota')
+    async crearUsuarioYCrearMascota(
+        @Body() parametrosCuerpo
+    ){
+        const usuario = parametrosCuerpo.usuario;
+        const mascota = parametrosCuerpo.mascota;
+        // Validad Usuario
+        // Valorar Mascota
+        // -> CREAMOS LOS DOS
+
+        let usuarioCreado;
+        try {
+            usuarioCreado = await this._usuarioService.crearUno(usuario);
+        }catch (e) {
+            console.error(e);
+            throw new InternalServerErrorException({
+                mensaje: 'Error creando usuario',
+            })
+        }
+
+        if (usuarioCreado){
+            mascota.usuario = usuarioCreado.id;
+            let mascotaCreada;
+            try {
+                mascotaCreada = await this._mascotaService.crearNuevaMascota(mascota);
+            }catch (e) {
+                console.error(e);
+                throw new InternalServerErrorException({
+                    mensaje: 'Error creando mascota',
+                })
+            }
+            if (mascotaCreada){
+                return{
+                    mascota: mascotaCreada,
+                    usuario: usuarioCreado
+                }
+            }else {
+                throw new InternalServerErrorException({
+                    mensaje: 'Error creando mascota'
+                })
+            }
+        }else {
+            throw new InternalServerErrorException({
+                mensaje: 'Error creando mascota'
+            })
+        }
+
+    }
+
+    @Get('vista/usuario')
+    vstaUsuario(
+        @Res() res
+    ){
+        const nombreControlador = 'Ronald'
+        res.render(
+            'ejemplo', // Nombre de la vista(archivo)
+            {
+                nombre: nombreControlador,
+            })
+    }
 
 
     //XML <usuario><nombre>RONALD</nombre></usuario>
@@ -135,4 +224,6 @@ export class UsuarioController {
     // Crear Uno
     // Editar Uno
     // Eliminar Uno
+
+
 }
